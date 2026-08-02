@@ -107,7 +107,7 @@ Set `nsfw:true` for adult-only questions. Discord must mark the current channel 
 ```bash
 .venv/bin/pip install -e '.[dev]'
 .venv/bin/python -m pytest
-.venv/bin/ruff check src tests scripts
+.venv/bin/ruff check src tests
 ```
 
 ## License
