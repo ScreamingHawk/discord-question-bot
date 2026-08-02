@@ -6,12 +6,25 @@ from question_bot.generator import Provider, QuestionGenerator, provider_from_en
 from question_bot.truth import TruthService, load_truths
 
 
-def test_truth_fallback_lists_are_large_and_unique():
+def test_truth_fallback_lists_are_large_unique_and_varied():
     for nsfw in (False, True):
         questions = load_truths(nsfw)
+        openings = {" ".join(question.lower().split()[:4]) for question in questions}
         assert len(questions) >= 250
         assert len(questions) == len(set(questions))
+        assert len(openings) >= 50
         assert all(question.endswith("?") for question in questions)
+        assert all(len(question) <= 180 for question in questions)
+
+
+def test_truth_lists_cover_classic_truth_or_dare_topics():
+    safe = " ".join(load_truths(False)).lower()
+    nsfw = " ".join(load_truths(True)).lower()
+
+    for topic in ("embarrass", "lie", "secret", "regret", "crush", "jealous"):
+        assert topic in safe
+    for topic in ("sex", "orgasm", "fantasy", "turn-on", "naked", "sext"):
+        assert topic in nsfw
 
 
 @pytest.mark.asyncio
