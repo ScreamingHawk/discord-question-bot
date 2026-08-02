@@ -19,8 +19,9 @@ def channel_allows_nsfw(channel: object | None) -> bool:
     return bool(checker()) if callable(checker) else False
 
 
-def question_embed(question: str, user: object) -> discord.Embed:
-    embed = discord.Embed(description=f"## {question}", color=discord.Color.blurple())
+def question_embed(question: str, user: object, nsfw: bool) -> discord.Embed:
+    color = discord.Color.red() if nsfw else discord.Color.blue()
+    embed = discord.Embed(description=f"## {question}", color=color)
     name = getattr(user, "display_name", str(user))
     avatar = getattr(getattr(user, "display_avatar", None), "url", None)
     author = {"name": f"Requested by {name}"}
@@ -33,7 +34,7 @@ def question_embed(question: str, user: object) -> discord.Embed:
 class QuestionButton(discord.ui.Button):
     def __init__(self, feature: str, nsfw: bool) -> None:
         super().__init__(
-            label="Another NSFW" if nsfw else "Another!",
+            label="Another NSFW!" if nsfw else "Another!",
             style=discord.ButtonStyle.danger if nsfw else discord.ButtonStyle.primary,
             custom_id=f"frankly:{feature}:another{'_nsfw' if nsfw else ''}",
         )
@@ -42,7 +43,7 @@ class QuestionButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction) -> None:
         view = self.view
         if isinstance(view, QuestionView):
-            await view.replace_question(interaction, self.nsfw)
+            await view.post_question(interaction, self.nsfw)
 
 
 class QuestionView(discord.ui.View):
@@ -54,7 +55,7 @@ class QuestionView(discord.ui.View):
         if show_nsfw:
             self.add_item(QuestionButton(feature, True))
 
-    async def replace_question(self, interaction: discord.Interaction, nsfw: bool) -> None:
+    async def post_question(self, interaction: discord.Interaction, nsfw: bool) -> None:
         if nsfw and not channel_allows_nsfw(interaction.channel):
             await interaction.response.send_message(NSFW_ONLY, ephemeral=True)
             return
@@ -65,8 +66,8 @@ class QuestionView(discord.ui.View):
             self.service,
             channel_allows_nsfw(interaction.channel),
         )
-        await interaction.edit_original_response(
-            embed=question_embed(question, interaction.user),
+        await interaction.followup.send(
+            embed=question_embed(question, interaction.user, nsfw),
             view=view,
         )
 
@@ -97,7 +98,7 @@ def build_bot(env: Mapping[str, str] | None = None) -> commands.Bot:
         question = await service.question(nsfw)
         view = QuestionView(feature, service, channel_allows_nsfw(interaction.channel))
         await interaction.followup.send(
-            embed=question_embed(question, interaction.user),
+            embed=question_embed(question, interaction.user, nsfw),
             view=view,
         )
 

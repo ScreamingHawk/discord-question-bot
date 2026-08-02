@@ -123,10 +123,12 @@ async def test_truth_sends_safe_fallback_question_as_attributed_embed():
     await bot.tree.get_command("truth").callback(interaction, False)
 
     embed = interaction.followup.embed
+    assert embed is not None
     assert interaction.response.deferred
     assert embed.description.removeprefix("## ") in load_truths(False)
     assert embed.author.name == "Requested by Michael"
     assert embed.author.icon_url == Avatar.url
+    assert embed.color == bot_module.discord.Color.blue()
     assert [button.label for button in interaction.followup.view.children] == ["Another!"]
 
 
@@ -137,31 +139,36 @@ async def test_nsfw_channel_shows_both_question_buttons():
     await bot.tree.get_command("truth").callback(interaction, False)
 
     view = interaction.followup.view
+    assert view is not None
     assert view.timeout is None
-    assert [button.label for button in view.children] == ["Another!", "Another NSFW"]
+    assert [button.label for button in view.children] == ["Another!", "Another NSFW!"]
     assert {button.custom_id for button in view.children} == {
         "frankly:truth:another",
         "frankly:truth:another_nsfw",
     }
 
 
-async def test_nsfw_button_replaces_question_and_attributes_clicker():
+async def test_nsfw_button_posts_new_question_and_attributes_clicker():
     bot = build_bot({})
     initial = Interaction(True)
     await bot.tree.get_command("truth").callback(initial, False)
     button = next(
-        button for button in initial.followup.view.children if button.label == "Another NSFW"
+        button for button in initial.followup.view.children if button.label == "Another NSFW!"
     )
     click = Interaction(True, "Agathe")
 
     await button.callback(click)
 
     assert click.response.deferred
-    assert click.edited_embed.description.removeprefix("## ") in load_truths(True)
-    assert click.edited_embed.author.name == "Requested by Agathe"
-    assert [button.label for button in click.edited_view.children] == [
+    assert click.edited_embed is None
+    assert click.followup.embed is not None
+    assert click.followup.view is not None
+    assert click.followup.embed.description.removeprefix("## ") in load_truths(True)
+    assert click.followup.embed.author.name == "Requested by Agathe"
+    assert click.followup.embed.color == bot_module.discord.Color.red()
+    assert [button.label for button in click.followup.view.children] == [
         "Another!",
-        "Another NSFW",
+        "Another NSFW!",
     ]
 
 
@@ -170,7 +177,7 @@ async def test_nsfw_button_rechecks_channel_before_generating():
     initial = Interaction(True)
     await bot.tree.get_command("truth").callback(initial, False)
     button = next(
-        button for button in initial.followup.view.children if button.label == "Another NSFW"
+        button for button in initial.followup.view.children if button.label == "Another NSFW!"
     )
     moved_interaction = Interaction(False)
 
@@ -186,7 +193,7 @@ async def test_would_you_rather_nsfw_button_rechecks_channel_before_generating()
     initial = Interaction(True)
     await bot.tree.get_command("would_you_rather").callback(initial, False)
     button = next(
-        button for button in initial.followup.view.children if button.label == "Another NSFW"
+        button for button in initial.followup.view.children if button.label == "Another NSFW!"
     )
     moved_interaction = Interaction(False)
 
@@ -197,7 +204,7 @@ async def test_would_you_rather_nsfw_button_rechecks_channel_before_generating()
     assert moved_interaction.edited_embed is None
 
 
-async def test_another_button_preserves_would_you_rather_game_type():
+async def test_another_button_posts_new_would_you_rather_question():
     bot = build_bot({})
     initial = Interaction(True)
     await bot.tree.get_command("would_you_rather").callback(initial, False)
@@ -208,9 +215,13 @@ async def test_another_button_preserves_would_you_rather_game_type():
 
     await button.callback(click)
 
-    question = click.edited_embed.description.removeprefix("## ")
+    assert click.edited_embed is None
+    assert click.followup.embed is not None
+    assert click.followup.view is not None
+    question = click.followup.embed.description.removeprefix("## ")
     assert question in load_would_you_rathers(False)
-    assert {button.custom_id for button in click.edited_view.children} == {
+    assert click.followup.embed.color == bot_module.discord.Color.blue()
+    assert {button.custom_id for button in click.followup.view.children} == {
         "frankly:would_you_rather:another",
         "frankly:would_you_rather:another_nsfw",
     }

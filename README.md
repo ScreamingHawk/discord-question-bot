@@ -9,8 +9,8 @@ A small Discord bot for candid conversations. It serves **Truth** and **Would Yo
 ## Features
 
 - Global `/truth` and `/would_you_rather` slash commands
-- Rich question embeds showing the requester's display name and avatar
-- Persistent **Another!** and **Another NSFW** buttons that update the current question
+- Rich question embeds showing the requester's display name and avatar, colored blue for SFW and red for NSFW
+- Persistent **Another!** and **Another NSFW!** buttons that post each new question as a new message
 - Optional `nsfw` argument on both commands
 - NSFW requests and controls restricted to age-restricted Discord channels
 - OpenAI or OpenRouter selection from audited question options
