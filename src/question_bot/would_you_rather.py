@@ -14,5 +14,10 @@ class WouldYouRatherService:
         self.generator = generator
 
     async def question(self, nsfw: bool = False) -> str:
-        kind = "party game Would You Rather with two distinct, balanced, difficult choices"
+        kind = (
+            "explicit, raunchy party game Would You Rather using direct adult sexual language, "
+            "with two distinct, balanced, difficult choices"
+            if nsfw
+            else "party game Would You Rather with two distinct, balanced, difficult choices"
+        )
         return await self.generator.generate(kind, nsfw, load_would_you_rathers(nsfw))

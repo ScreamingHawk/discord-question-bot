@@ -1,4 +1,5 @@
 import random
+import re
 from collections import Counter
 
 import pytest
@@ -37,6 +38,58 @@ def test_would_you_rather_lists_cover_classic_party_topics():
         assert topic in nsfw
 
 
+def test_would_you_rather_nsfw_list_is_explicit_but_excludes_abuse():
+    questions = load_would_you_rathers(True)
+    explicit = (
+        "fuck",
+        "blowjob",
+        "oral sex",
+        "anal",
+        "cum",
+        "penetrat",
+        "masturbat",
+        "orgasm",
+        "sex toy",
+        "threesome",
+        "bondage",
+        "dirty talk",
+        "porn",
+        "sext",
+        "nude",
+        "naked",
+        "sex",
+    )
+    strong = explicit[:-3]
+    forbidden = re.compile(
+        r"\b(minor|underage|child|teen|incest|rape|molest|coerc|assault|abuse|"
+        r"intoxicated|drunk|blackout|younger|mother|father|sister|brother|sibling|"
+        r"animal|bestiality|boss|subordinate|teacher|student|choke|stranger|caught|"
+        r"dangerous|life-threatening|feces|electricity|park|elevator|balcony|beach|"
+        r"risky|revenge|witnessed|compression|pressure|heat|ice)\b|"
+        r"without [^?]{0,40}(consent|permission|knowledge)|non-consens|unprotected sex|"
+        r"public sex|in public|public place|household object|boundary [^?]{0,20}crossed|"
+        r"incorporated air",
+        re.IGNORECASE,
+    )
+    prefixes = Counter(
+        " ".join(
+            question.removeprefix("Would you rather ").lower().split()[:5]
+        )
+        for question in questions
+    )
+
+    assert (
+        sum(any(term in question.lower() for term in explicit) for question in questions)
+        >= 175
+    )
+    assert (
+        sum(any(term in question.lower() for term in strong) for question in questions)
+        >= 75
+    )
+    assert max(prefixes.values()) <= 8
+    assert not any(forbidden.search(question) for question in questions)
+
+
 @pytest.mark.asyncio
 async def test_would_you_rather_uses_fallback_without_provider():
     service = WouldYouRatherService(QuestionGenerator(rng=random.Random(8)))
@@ -64,4 +117,6 @@ async def test_would_you_rather_asks_ai_for_two_adult_options():
     assert "two distinct" in prompts[0][2].lower()
     assert "balanced" in prompts[0][2].lower()
     assert "difficult" in prompts[0][2].lower()
+    assert "explicit" in prompts[0][2].lower()
+    assert "raunchy" in prompts[0][2].lower()
     assert "consenting adults" in prompts[0][2].lower()

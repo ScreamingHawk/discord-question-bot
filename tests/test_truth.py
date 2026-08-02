@@ -1,4 +1,5 @@
 import random
+import re
 
 import pytest
 
@@ -25,6 +26,51 @@ def test_truth_lists_cover_classic_truth_or_dare_topics():
         assert topic in safe
     for topic in ("sex", "orgasm", "fantasy", "turn-on", "naked", "sext"):
         assert topic in nsfw
+
+
+def test_truth_nsfw_list_is_explicit_but_excludes_abuse():
+    questions = load_truths(True)
+    explicit = (
+        "fuck",
+        "blowjob",
+        "oral sex",
+        "anal",
+        "cum",
+        "penetrat",
+        "masturbat",
+        "orgasm",
+        "sex toy",
+        "threesome",
+        "bondage",
+        "dirty talk",
+        "porn",
+        "sext",
+        "nude",
+        "naked",
+        "sex",
+    )
+    strong = explicit[:-3]
+    forbidden = re.compile(
+        r"\b(minor|underage|child|teen|incest|rape|molest|coerc|assault|abuse|"
+        r"intoxicated|drunk|blackout|younger|mother|father|sister|brother|sibling|"
+        r"animal|bestiality|boss|subordinate|teacher|student|choke|stranger|caught|"
+        r"dangerous|life-threatening|feces|electricity|park|elevator|balcony|beach|"
+        r"risky|revenge|witnessed|compression|pressure|heat|ice)\b|"
+        r"without [^?]{0,40}(consent|permission|knowledge)|non-consens|unprotected sex|"
+        r"public sex|in public|public place|household object|boundary [^?]{0,20}crossed|"
+        r"incorporated air",
+        re.IGNORECASE,
+    )
+
+    assert (
+        sum(any(term in question.lower() for term in explicit) for question in questions)
+        >= 175
+    )
+    assert (
+        sum(any(term in question.lower() for term in strong) for question in questions)
+        >= 75
+    )
+    assert not any(forbidden.search(question) for question in questions)
 
 
 @pytest.mark.asyncio
@@ -73,7 +119,24 @@ async def test_truth_asks_ai_for_an_international_adult_question():
     assert "international" in prompts[0][1].lower()
     assert "truth or dare" in prompts[0][2].lower()
     assert "direct" in prompts[0][2].lower()
+    assert "explicit" in prompts[0][2].lower()
+    assert "raunchy" in prompts[0][2].lower()
     assert "consenting adults" in prompts[0][2].lower()
+
+
+@pytest.mark.asyncio
+async def test_truth_falls_back_when_ai_returns_an_incomplete_question():
+    async def incomplete(*_args):
+        return "What is"
+
+    provider = Provider("openai", "key", None, "model")
+    service = TruthService(
+        QuestionGenerator(provider, complete=incomplete, rng=random.Random(2))
+    )
+
+    question = await service.question(nsfw=True)
+
+    assert question in load_truths(True)
 
 
 @pytest.mark.asyncio
