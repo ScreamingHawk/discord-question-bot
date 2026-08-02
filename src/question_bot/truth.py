@@ -14,4 +14,5 @@ class TruthService:
         self.generator = generator
 
     async def question(self, nsfw: bool = False) -> str:
-        return await self.generator.generate("truth", nsfw, load_truths(nsfw))
+        kind = "classic Truth or Dare truth that is direct, revealing, and easy to answer aloud"
+        return await self.generator.generate(kind, nsfw, load_truths(nsfw))

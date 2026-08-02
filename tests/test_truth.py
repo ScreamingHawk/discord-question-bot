@@ -71,6 +71,8 @@ async def test_truth_asks_ai_for_an_international_adult_question():
     assert question == "What belief have you changed as an adult?"
     assert "30+" in prompts[0][1]
     assert "international" in prompts[0][1].lower()
+    assert "truth or dare" in prompts[0][2].lower()
+    assert "direct" in prompts[0][2].lower()
     assert "consenting adults" in prompts[0][2].lower()
 
 
