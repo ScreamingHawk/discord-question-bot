@@ -10,26 +10,27 @@ A small Discord bot for candid conversations. It serves **Truth** and **Would Yo
 
 - Global `/truth` and `/would_you_rather` slash commands
 - Rich question embeds showing the requester's display name and avatar, colored blue for SFW and red for NSFW
-- Persistent **Another!** and **Another NSFW!** buttons that post each new question as a new message
+- Persistent **Another!** buttons that post each new question as a new message without changing the original post
+- **Another NSFW!** buttons in age-restricted channels, with the channel restriction rechecked on every click
 - Optional `nsfw` argument on both commands
 - NSFW requests and controls restricted to age-restricted Discord channels
 - OpenAI or OpenRouter selection from audited question options
 - Automatic local random fallback when no AI key is configured, selection fails, or a provider returns anything outside the approved options
 - 250 general and 250 NSFW fallback questions for each feature
 - No privileged Discord intents
-- Global commands support any number of guilds
+- Global commands work across every guild where the bot is installed
 
 ## Discord setup
 
 1. Create an application in the [Discord Developer Portal](https://discord.com/developers/applications).
-2. Open **Bot**, create the bot, and copy its token.
+2. Open **Bot**, use **Reset Token** to generate a bot token, and copy it somewhere secure.
 3. If other servers should be able to install it, enable **Public Bot**.
 4. Open **Installation** and enable **Guild Install**.
 5. Add the `bot` and `applications.commands` scopes.
-6. Grant **Send Messages** and **Use Application Commands** permissions.
+6. Grant the bot **View Channels**, **Send Messages**, and **Embed Links** permissions. Members who invoke the slash commands must have **Use Application Commands** in the channel.
 7. Use the generated install link to add the bot to each guild.
 
-Commands are registered globally. Discord can take up to an hour to show a new global command everywhere.
+Commands are registered globally and are available in every guild where the bot is installed. Discord applies read-repair when a user invokes a stale global command after an update.
 
 ## Run locally
 
@@ -39,6 +40,7 @@ Python 3.11 or newer is required.
 python3 -m venv .venv
 .venv/bin/pip install -e .
 cp .env.example .env
+chmod 600 .env
 ```
 
 Set `DISCORD_BOT_TOKEN` in `.env`, then optionally set either AI provider key. Load the environment and start the bot:
@@ -50,15 +52,9 @@ set +a
 .venv/bin/discord-question-bot
 ```
 
-Protect the environment file because it contains credentials:
-
-```bash
-chmod 600 .env
-```
-
 ## Run as a service
 
-The included user service assumes the repository is at `~/discord-question-bot`:
+Complete the local installation first so `.venv` and `.env` exist. The included user service assumes the repository is at `~/discord-question-bot`:
 
 ```bash
 mkdir -p ~/.config/systemd/user
@@ -93,16 +89,16 @@ If it reports `Linger=no`, enable it once with `sudo loginctl enable-linger "$US
 | `OPENROUTER_API_KEY` | No | — |
 | `OPENROUTER_MODEL` | No | `openai/gpt-4o-mini` |
 
-OpenAI is selected when both keys are present. A configured provider chooses verbatim from a sampled set of audited bundled questions; provider-created or modified text is rejected. With neither key—or if provider selection fails—the bot selects randomly from the same bundled lists. This keeps normal and NSFW channel boundaries enforceable without trusting generated text.
+OpenAI takes priority when both keys are present. For each request, a configured provider is shown 12 randomly sampled, audited questions and must choose one verbatim. Provider-created or modified text is rejected. With neither key—or if provider selection fails—the bot selects randomly from the same bundled lists. This keeps normal and NSFW channel boundaries enforceable without trusting generated text.
 
 ## Commands
 
-```text
-/truth [nsfw:false]
-/would_you_rather [nsfw:false]
-```
+| Command | Optional argument |
+| --- | --- |
+| `/truth` | `nsfw` boolean, default `false` |
+| `/would_you_rather` | `nsfw` boolean, default `false` |
 
-Set `nsfw:true` for adult-only questions. Discord must mark the current channel as age-restricted; otherwise the bot responds privately with an error.
+Set `nsfw` to `true` for adult-only questions. Discord must mark the current channel as age-restricted; otherwise the bot responds privately with an error. SFW posts show only **Another!** outside age-restricted channels; posts in age-restricted channels show both buttons.
 
 ## Development
 
