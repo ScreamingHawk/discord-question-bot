@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "discord-question-bot"
+version = "0.1.0"
+description = "AI-generated Truth and Would You Rather questions for Discord"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Michael Standen" }]
+dependencies = [
+  "discord.py>=2.5,<3",
+  "openai>=1.68,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+  "pytest-asyncio>=0.25,<1",
+  "ruff>=0.11,<1",
+]
+
+[project.scripts]
+discord-question-bot = "question_bot.bot:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/question_bot"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
