@@ -48,6 +48,39 @@ set +a
 .venv/bin/discord-question-bot
 ```
 
+Protect the environment file because it contains credentials:
+
+```bash
+chmod 600 .env
+```
+
+## Run as a service
+
+The included user service assumes the repository is at `~/discord-question-bot`:
+
+```bash
+mkdir -p ~/.config/systemd/user
+cp deploy/frankly.service ~/.config/systemd/user/
+systemd-analyze --user verify ~/.config/systemd/user/frankly.service
+systemctl --user daemon-reload
+systemctl --user enable --now frankly.service
+```
+
+Check health and follow logs:
+
+```bash
+systemctl --user status frankly.service
+journalctl --user -u frankly.service -f
+```
+
+For startup before login, check whether user lingering is enabled:
+
+```bash
+loginctl show-user "$USER" -p Linger
+```
+
+If it reports `Linger=no`, enable it once with `sudo loginctl enable-linger "$USER"`.
+
 ## Configuration
 
 | Variable | Required | Default |

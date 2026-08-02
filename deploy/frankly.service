@@ -1,0 +1,21 @@
+[Unit]
+Description=Frankly Discord question bot
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+WorkingDirectory=%h/discord-question-bot
+EnvironmentFile=%h/discord-question-bot/.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=%h/discord-question-bot/.venv/bin/discord-question-bot
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+UMask=0077
+
+[Install]
+WantedBy=default.target

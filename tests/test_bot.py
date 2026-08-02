@@ -1,3 +1,4 @@
+import question_bot.bot as bot_module
 from question_bot.bot import NSFW_ONLY, build_bot, channel_allows_nsfw
 from question_bot.truth import load_truths
 
@@ -74,3 +75,18 @@ async def test_truth_sends_safe_fallback_question():
 
     assert interaction.response.deferred
     assert interaction.followup.message in load_truths(False)
+
+
+def test_main_keeps_discord_logging_enabled(monkeypatch):
+    calls = []
+
+    class Bot:
+        def run(self, *args, **kwargs):
+            calls.append((args, kwargs))
+
+    monkeypatch.setenv("DISCORD_BOT_TOKEN", "token")
+    monkeypatch.setattr(bot_module, "build_bot", Bot)
+
+    bot_module.main()
+
+    assert calls == [(('token',), {})]

@@ -54,7 +54,7 @@ def main() -> None:
     token = os.environ.get("DISCORD_BOT_TOKEN")
     if not token:
         raise RuntimeError("DISCORD_BOT_TOKEN is required")
-    build_bot().run(token, log_handler=None)
+    build_bot().run(token)
 
 
 if __name__ == "__main__":
