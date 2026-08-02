@@ -9,8 +9,10 @@ A small Discord bot for candid conversations. It generates **Truth** and **Would
 ## Features
 
 - Global `/truth` and `/would_you_rather` slash commands
+- Rich question embeds showing the requester's display name and avatar
+- Persistent **Another!** and **Another NSFW** buttons that update the current question
 - Optional `nsfw` argument on both commands
-- NSFW requests rejected unless the Discord channel is age-restricted
+- NSFW requests and controls restricted to age-restricted Discord channels
 - OpenAI or OpenRouter question generation
 - Automatic local fallback when no AI key is configured or generation fails
 - 250 general and 250 NSFW fallback questions for each feature
