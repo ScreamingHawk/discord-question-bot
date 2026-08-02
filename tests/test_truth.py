@@ -28,7 +28,7 @@ def test_openai_is_preferred_when_both_keys_exist():
         {"OPENAI_API_KEY": "openai", "OPENROUTER_API_KEY": "openrouter"}
     )
 
-    assert provider == Provider("openai", "openai", None, "gpt-5-nano")
+    assert provider == Provider("openai", "openai", None, "gpt-5.6-luna")
 
 
 def test_openrouter_is_selected_when_it_is_the_only_key():

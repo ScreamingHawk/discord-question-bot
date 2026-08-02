@@ -21,7 +21,7 @@ class Provider:
 
 def provider_from_env(env: Mapping[str, str] = os.environ) -> Provider | None:
     if key := env.get("OPENAI_API_KEY"):
-        return Provider("openai", key, None, env.get("OPENAI_MODEL", "gpt-5-nano"))
+        return Provider("openai", key, None, env.get("OPENAI_MODEL", "gpt-5.6-luna"))
     if key := env.get("OPENROUTER_API_KEY"):
         return Provider(
             "openrouter",

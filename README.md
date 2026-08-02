@@ -54,7 +54,7 @@ set +a
 | --- | --- | --- |
 | `DISCORD_BOT_TOKEN` | Yes | — |
 | `OPENAI_API_KEY` | No | — |
-| `OPENAI_MODEL` | No | `gpt-5-nano` |
+| `OPENAI_MODEL` | No | `gpt-5.6-luna` |
 | `OPENROUTER_API_KEY` | No | — |
 | `OPENROUTER_MODEL` | No | `openai/gpt-4o-mini` |
 
