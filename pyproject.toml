@@ -31,7 +31,10 @@ packages = ["src/question_bot"]
 [tool.pytest.ini_options]
 addopts = "-q"
 asyncio_mode = "auto"
-filterwarnings = ["ignore::DeprecationWarning:pytest_asyncio.*"]
+filterwarnings = [
+  "ignore::DeprecationWarning:pytest_asyncio.*",
+  "ignore::DeprecationWarning:discord.*",
+]
 
 [tool.ruff]
 line-length = 100
