@@ -4,7 +4,12 @@ from collections import Counter
 
 import pytest
 
-from question_bot.generator import Provider, QuestionGenerator
+from question_bot.generator import (
+    Provider,
+    QuestionGenerator,
+    valid_question_shape,
+    valid_would_you_rather_question,
+)
 from question_bot.would_you_rather import WouldYouRatherService, load_would_you_rathers
 
 
@@ -26,6 +31,30 @@ def test_would_you_rather_fallback_lists_are_large_unique_and_varied():
         assert all(question.startswith("Would you rather ") for question in questions)
         assert all(question.endswith("?") for question in questions)
         assert all(len(question) <= 180 for question in questions)
+
+
+def test_every_would_you_rather_fallback_passes_runtime_validation():
+    for nsfw in (False, True):
+        assert all(
+            valid_question_shape(question, nsfw)
+            and valid_would_you_rather_question(question)
+            for question in load_would_you_rathers(nsfw)
+        )
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "Would you rather yes or no?",
+        "Would you rather yes or dance forever?",
+        "Would you rather dance forever or no?",
+        "Would you rather or dance forever?",
+        "Would you rather dance forever or?",
+        "Would you rather dance forever or dance forever?",
+    ],
+)
+def test_would_you_rather_validator_rejects_trivial_or_malformed_choices(answer):
+    assert not valid_would_you_rather_question(answer)
 
 
 def test_would_you_rather_lists_cover_classic_party_topics():
@@ -105,7 +134,7 @@ async def test_would_you_rather_asks_ai_for_two_adult_options():
 
     async def complete(provider, system, prompt):
         prompts.append((provider, system, prompt))
-        return "Would you rather kiss slowly or be kissed passionately?"
+        return prompt.split("Approved options:\n", 1)[1].splitlines()[0].removeprefix("- ")
 
     provider = Provider("openrouter", "key", "https://openrouter.ai/api/v1", "model")
     service = WouldYouRatherService(QuestionGenerator(provider, complete=complete))
@@ -120,3 +149,52 @@ async def test_would_you_rather_asks_ai_for_two_adult_options():
     assert "explicit" in prompts[0][2].lower()
     assert "raunchy" in prompts[0][2].lower()
     assert "consenting adults" in prompts[0][2].lower()
+
+
+@pytest.mark.asyncio
+async def test_would_you_rather_falls_back_when_ai_returns_truth_question():
+    async def wrong_game(*_args):
+        return "What is the most embarrassing secret you have kept?"
+
+    provider = Provider("openrouter", "key", "https://openrouter.ai/api/v1", "model")
+    service = WouldYouRatherService(
+        QuestionGenerator(provider, complete=wrong_game, rng=random.Random(3))
+    )
+
+    question = await service.question(nsfw=False)
+
+    assert question in load_would_you_rathers(False)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "answer",
+    ["Would you rather?", "Would you rather kiss slowly or kiss slowly?"],
+)
+async def test_would_you_rather_falls_back_when_ai_returns_degenerate_shape(answer):
+    async def incomplete(*_args):
+        return answer
+
+    provider = Provider("openrouter", "key", "https://openrouter.ai/api/v1", "model")
+    service = WouldYouRatherService(
+        QuestionGenerator(provider, complete=incomplete, rng=random.Random(3))
+    )
+
+    question = await service.question(nsfw=True)
+
+    assert question in load_would_you_rathers(True)
+
+
+@pytest.mark.asyncio
+async def test_safe_would_you_rather_falls_back_from_explicit_ai_output():
+    async def explicit(*_args):
+        return "Would you rather give oral sex or receive oral sex?"
+
+    provider = Provider("openrouter", "key", "https://openrouter.ai/api/v1", "model")
+    service = WouldYouRatherService(
+        QuestionGenerator(provider, complete=explicit, rng=random.Random(3))
+    )
+
+    question = await service.question(nsfw=False)
+
+    assert question in load_would_you_rathers(False)

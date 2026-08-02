@@ -1,7 +1,7 @@
 import json
 from importlib.resources import files
 
-from .generator import QuestionGenerator
+from .generator import QuestionGenerator, valid_truth_question
 
 
 def load_truths(nsfw: bool) -> list[str]:
@@ -19,4 +19,9 @@ class TruthService:
             if nsfw
             else "classic Truth or Dare truth that is direct, revealing, and easy to answer aloud"
         )
-        return await self.generator.generate(kind, nsfw, load_truths(nsfw))
+        return await self.generator.generate(
+            kind,
+            nsfw,
+            load_truths(nsfw),
+            valid_truth_question,
+        )

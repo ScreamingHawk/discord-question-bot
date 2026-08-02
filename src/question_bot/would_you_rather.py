@@ -1,7 +1,7 @@
 import json
 from importlib.resources import files
 
-from .generator import QuestionGenerator
+from .generator import QuestionGenerator, valid_would_you_rather_question
 
 
 def load_would_you_rathers(nsfw: bool) -> list[str]:
@@ -20,4 +20,9 @@ class WouldYouRatherService:
             if nsfw
             else "party game Would You Rather with two distinct, balanced, difficult choices"
         )
-        return await self.generator.generate(kind, nsfw, load_would_you_rathers(nsfw))
+        return await self.generator.generate(
+            kind,
+            nsfw,
+            load_would_you_rathers(nsfw),
+            valid_would_you_rather_question,
+        )

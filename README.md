@@ -2,7 +2,7 @@
 
 ![Frankly profile image](assets/profile.png)
 
-A small Discord bot for candid conversations. It generates **Truth** and **Would You Rather** questions for an international audience aged 30+, with optional adult-only modes.
+A small Discord bot for candid conversations. It serves **Truth** and **Would You Rather** questions for an international audience aged 30+, with optional adult-only modes.
 
 **Recommended bot name: Frankly.** It is short, friendly, and fits both honest answers and difficult choices. The included 1024×1024 profile image was generated with `openai/gpt-image-1-mini` through OpenRouter and is safe for Discord's circular crop.
 
@@ -13,8 +13,8 @@ A small Discord bot for candid conversations. It generates **Truth** and **Would
 - Persistent **Another!** and **Another NSFW** buttons that update the current question
 - Optional `nsfw` argument on both commands
 - NSFW requests and controls restricted to age-restricted Discord channels
-- OpenAI or OpenRouter question generation
-- Automatic local fallback when no AI key is configured or generation fails
+- OpenAI or OpenRouter selection from audited question options
+- Automatic local random fallback when no AI key is configured, selection fails, or a provider returns anything outside the approved options
 - 250 general and 250 NSFW fallback questions for each feature
 - No privileged Discord intents
 - Global commands support any number of guilds
@@ -93,7 +93,7 @@ If it reports `Linger=no`, enable it once with `sudo loginctl enable-linger "$US
 | `OPENROUTER_API_KEY` | No | — |
 | `OPENROUTER_MODEL` | No | `openai/gpt-4o-mini` |
 
-OpenAI is selected when both keys are present. With neither key, questions are selected randomly from the bundled lists. AI errors also fall back locally so commands remain usable.
+OpenAI is selected when both keys are present. A configured provider chooses verbatim from a sampled set of audited bundled questions; provider-created or modified text is rejected. With neither key—or if provider selection fails—the bot selects randomly from the same bundled lists. This keeps normal and NSFW channel boundaries enforceable without trusting generated text.
 
 ## Commands
 

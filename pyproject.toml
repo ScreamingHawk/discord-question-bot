@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "discord-question-bot"
 version = "0.1.0"
-description = "AI-generated Truth and Would You Rather questions for Discord"
+description = "Audited Truth and Would You Rather questions for Discord"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"

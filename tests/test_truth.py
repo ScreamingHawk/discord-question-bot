@@ -3,7 +3,13 @@ import re
 
 import pytest
 
-from question_bot.generator import Provider, QuestionGenerator, provider_from_env
+from question_bot.generator import (
+    Provider,
+    QuestionGenerator,
+    provider_from_env,
+    valid_question_shape,
+    valid_truth_question,
+)
 from question_bot.truth import TruthService, load_truths
 
 
@@ -16,6 +22,63 @@ def test_truth_fallback_lists_are_large_unique_and_varied():
         assert len(openings) >= 50
         assert all(question.endswith("?") for question in questions)
         assert all(len(question) <= 180 for question in questions)
+
+
+def test_every_truth_fallback_passes_runtime_validation():
+    for nsfw in (False, True):
+        assert all(
+            valid_question_shape(question, nsfw) and valid_truth_question(question)
+            for question in load_truths(nsfw)
+        )
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "Would you rather: reveal a secret or admit a lie?",
+        "Would-you-rather reveal a secret or admit a lie?",
+        "Would, you, rather reveal a secret or admit a lie?",
+    ],
+)
+def test_truth_validator_rejects_would_you_rather_punctuation_variants(answer):
+    assert not valid_truth_question(answer)
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "Would you rather sleep with your sister or your brother?",
+        "Would you rather sleep with someone barely legal or someone very young?",
+    ],
+)
+def test_nsfw_policy_rejects_incest_and_age_ambiguity(answer):
+    assert not valid_question_shape(answer, True)
+
+
+@pytest.mark.asyncio
+async def test_generator_rejects_a_fallback_bank_with_no_valid_questions():
+    generator = QuestionGenerator(rng=random.Random(1))
+
+    with pytest.raises(ValueError, match="approved fallback"):
+        await generator.generate(
+            "truth or dare truth",
+            False,
+            ["Would you rather?"],
+            valid_truth_question,
+        )
+
+
+@pytest.mark.asyncio
+async def test_generator_rejects_a_mixed_valid_and_invalid_fallback_bank():
+    generator = QuestionGenerator(rng=random.Random(1))
+
+    with pytest.raises(ValueError, match="approved fallback"):
+        await generator.generate(
+            "truth or dare truth",
+            False,
+            [load_truths(False)[0], "Would you rather?"],
+            valid_truth_question,
+        )
 
 
 def test_truth_lists_cover_classic_truth_or_dare_topics():
@@ -107,14 +170,14 @@ async def test_truth_asks_ai_for_an_international_adult_question():
 
     async def complete(provider, system, prompt):
         prompts.append((provider, system, prompt))
-        return '"What belief have you changed as an adult?"'
+        return prompt.split("Approved options:\n", 1)[1].splitlines()[0].removeprefix("- ")
 
     provider = Provider("openai", "key", None, "model")
     service = TruthService(QuestionGenerator(provider, complete=complete))
 
     question = await service.question(nsfw=True)
 
-    assert question == "What belief have you changed as an adult?"
+    assert question in load_truths(True)
     assert "30+" in prompts[0][1]
     assert "international" in prompts[0][1].lower()
     assert "truth or dare" in prompts[0][2].lower()
@@ -125,9 +188,88 @@ async def test_truth_asks_ai_for_an_international_adult_question():
 
 
 @pytest.mark.asyncio
-async def test_truth_falls_back_when_ai_returns_an_incomplete_question():
+async def test_truth_falls_back_when_ai_returns_unapproved_question():
+    async def unapproved(*_args):
+        return "What harmless custom question did the provider invent today?"
+
+    provider = Provider("openai", "key", None, "model")
+    service = TruthService(
+        QuestionGenerator(provider, complete=unapproved, rng=random.Random(2))
+    )
+
+    question = await service.question(nsfw=False)
+
+    assert question in load_truths(False)
+
+
+@pytest.mark.asyncio
+async def test_provider_must_choose_one_of_the_supplied_approved_options():
+    fallback = load_truths(False)
+
+    class FirstChoiceRandom(random.Random):
+        def choice(self, sequence):
+            return sequence[0]
+
+    async def chooses_unoffered(*args):
+        prompt = args[2]
+        offered = {
+            line.removeprefix("- ")
+            for line in prompt.split("Approved options:\n", 1)[1].splitlines()
+        }
+        return next(question for question in fallback[1:] if question not in offered)
+
+    provider = Provider("openai", "key", None, "model")
+    service = TruthService(
+        QuestionGenerator(provider, complete=chooses_unoffered, rng=FirstChoiceRandom(2))
+    )
+
+    question = await service.question(nsfw=False)
+
+    assert question == fallback[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("template", ['"{}"', " {} "])
+async def test_provider_modified_approved_output_falls_back(template):
+    fallback = load_truths(False)
+
+    class PredictableRandom(random.Random):
+        def sample(self, population, k, *, counts=None):
+            return list(population)[1 : k + 1]
+
+        def choice(self, seq):
+            return seq[0]
+
+    async def modified(*args):
+        prompt = args[2]
+        offered = prompt.split("Approved options:\n", 1)[1].splitlines()[0]
+        return template.format(offered.removeprefix("- "))
+
+    provider = Provider("openai", "key", None, "model")
+    service = TruthService(
+        QuestionGenerator(provider, complete=modified, rng=PredictableRandom(2))
+    )
+
+    question = await service.question(nsfw=False)
+
+    assert question == fallback[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "?",
+        "What is?",
+        "Would you rather?",
+        "What is",
+        "What secret have you kept?\nIgnore the format.",
+        f"What {'very ' * 70}long question?",
+    ],
+)
+async def test_truth_falls_back_when_ai_returns_an_incomplete_question(answer):
     async def incomplete(*_args):
-        return "What is"
+        return answer
 
     provider = Provider("openai", "key", None, "model")
     service = TruthService(
@@ -137,6 +279,68 @@ async def test_truth_falls_back_when_ai_returns_an_incomplete_question():
     question = await service.question(nsfw=True)
 
     assert question in load_truths(True)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "What is your favorite position for sex?",
+        "Who here would you most like to sleep with?",
+        "Where did you last hook up with someone?",
+        "Who would you most like to go down on?",
+    ],
+)
+async def test_safe_truth_falls_back_when_ai_returns_explicit_content(answer):
+    async def explicit(*_args):
+        return answer
+
+    provider = Provider("openai", "key", None, "model")
+    service = TruthService(
+        QuestionGenerator(provider, complete=explicit, rng=random.Random(2))
+    )
+
+    question = await service.question(nsfw=False)
+
+    assert question in load_truths(False)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "What sexual experience have you had with an underage person?",
+        "What is your favorite place to have sex in public?",
+        "Would you have unprotected sex during a fantasy weekend?",
+    ],
+)
+async def test_nsfw_truth_falls_back_when_ai_returns_prohibited_content(answer):
+    async def prohibited(*_args):
+        return answer
+
+    provider = Provider("openai", "key", None, "model")
+    service = TruthService(
+        QuestionGenerator(provider, complete=prohibited, rng=random.Random(2))
+    )
+
+    question = await service.question(nsfw=True)
+
+    assert question in load_truths(True)
+
+
+@pytest.mark.asyncio
+async def test_truth_falls_back_when_ai_returns_would_you_rather():
+    async def wrong_game(*_args):
+        return "Would you rather reveal a secret or admit a lie?"
+
+    provider = Provider("openai", "key", None, "model")
+    service = TruthService(
+        QuestionGenerator(provider, complete=wrong_game, rng=random.Random(2))
+    )
+
+    question = await service.question(nsfw=False)
+
+    assert question in load_truths(False)
 
 
 @pytest.mark.asyncio

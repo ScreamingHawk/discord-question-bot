@@ -78,6 +78,33 @@ def test_bot_registers_one_slash_command_per_feature():
     assert all(command._guild_ids is None for command in commands)
 
 
+async def test_setup_hook_registers_both_persistent_question_views(monkeypatch):
+    bot = build_bot({})
+    sync_calls = []
+
+    async def sync():
+        sync_calls.append(True)
+        return []
+
+    monkeypatch.setattr(bot.tree, "sync", sync)
+
+    await bot.setup_hook()
+
+    assert sync_calls == [True]
+    assert len(bot.persistent_views) == 2
+    assert all(view.timeout is None for view in bot.persistent_views)
+    assert {
+        button.custom_id  # type: ignore[attr-defined]
+        for view in bot.persistent_views
+        for button in view.children
+    } == {
+        "frankly:truth:another",
+        "frankly:truth:another_nsfw",
+        "frankly:would_you_rather:another",
+        "frankly:would_you_rather:another_nsfw",
+    }
+
+
 async def test_truth_rejects_nsfw_mode_outside_nsfw_channels():
     bot = build_bot({})
     interaction = Interaction(False)
@@ -142,6 +169,22 @@ async def test_nsfw_button_rechecks_channel_before_generating():
     bot = build_bot({})
     initial = Interaction(True)
     await bot.tree.get_command("truth").callback(initial, False)
+    button = next(
+        button for button in initial.followup.view.children if button.label == "Another NSFW"
+    )
+    moved_interaction = Interaction(False)
+
+    await button.callback(moved_interaction)
+
+    assert moved_interaction.response.message == NSFW_ONLY
+    assert moved_interaction.response.ephemeral
+    assert moved_interaction.edited_embed is None
+
+
+async def test_would_you_rather_nsfw_button_rechecks_channel_before_generating():
+    bot = build_bot({})
+    initial = Interaction(True)
+    await bot.tree.get_command("would_you_rather").callback(initial, False)
     button = next(
         button for button in initial.followup.view.children if button.label == "Another NSFW"
     )
