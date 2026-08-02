@@ -110,12 +110,6 @@ Set `nsfw:true` for adult-only questions. Discord must mark the current channel 
 .venv/bin/ruff check src tests scripts
 ```
 
-Regenerate the checked-in Would You Rather fallback data after editing its source list:
-
-```bash
-.venv/bin/python scripts/generate_would_you_rathers.py
-```
-
 ## License
 
 [MIT](LICENSE) © 2026 Michael Standen

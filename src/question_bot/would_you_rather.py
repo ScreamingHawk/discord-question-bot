@@ -14,5 +14,5 @@ class WouldYouRatherService:
         self.generator = generator
 
     async def question(self, nsfw: bool = False) -> str:
-        kind = "Would You Rather with two distinct choices"
+        kind = "party game Would You Rather with two distinct, balanced, difficult choices"
         return await self.generator.generate(kind, nsfw, load_would_you_rathers(nsfw))
