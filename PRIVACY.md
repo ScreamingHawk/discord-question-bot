@@ -2,7 +2,7 @@
 
 **Effective date: 4 August 2026 (New Zealand time)**
 
-Frankly is a Discord party-question bot operated by **Michael Standen** in New Zealand. This policy explains what information Frankly handles when you use its slash commands or buttons.
+Frankly is a Discord party-question bot operated by **Ao Collaboration Ltd** in New Zealand. This policy explains what information Frankly handles when you use its slash commands or buttons.
 
 ## 1. Scope
 
@@ -52,7 +52,7 @@ Frankly has no application database or interaction-history store and does not wr
 
 Frankly is self-hosted on operator-managed infrastructure; no separate analytics or hosted logging service receives its service logs. Routine logs contain operational events such as startup, shutdown, Discord gateway connectivity, and technical errors. The application does not deliberately log interaction payloads or usage, but dependency-generated diagnostics may include gateway session IDs, request metadata, command names, or other Discord technical identifiers when an error occurs.
 
-Service logs have no fixed retention period. They are kept only for security and troubleshooting and are automatically removed as the size-limited system journal rotates according to available storage and host configuration. Any incidentally logged personal information is deleted or anonymised when it is no longer needed for those purposes.
+Service logs have no fixed retention period. The system journal removes entries through size-based rotation according to available storage and host configuration, rather than on a guaranteed time schedule. Low-volume entries may therefore remain for an extended period. The current deployment does not provide selective anonymisation or automatic purpose-based deletion of individual journal entries.
 
 Messages posted by Frankly are stored by Discord under Discord's retention practices and the relevant server's moderation policies. To remove a Frankly post, contact a moderator of the Discord server or use Discord's available message-management tools.
 
@@ -88,7 +88,7 @@ Discord processes interaction data and bot messages and may do so outside New Ze
 
 General use is limited to people who meet Discord's minimum age requirement in their country and any higher age required by local law. A parent or guardian's permission is also required where applicable law requires it.
 
-NSFW features are only available when Discord reports the current channel as age-restricted. Frankly hides the NSFW button outside those channels and rechecks the channel before every NSFW response. Frankly relies on Discord's access controls and does not independently verify a user's age. NSFW features are intended only for users who are at least 18 and legally permitted to access adult content.
+NSFW features are only available when Discord reports the current channel as age-restricted. When Frankly creates a message, it omits the NSFW button unless the channel is age-restricted at that time. If an administrator later removes the restriction, an existing persistent button may remain visible, but Frankly rechecks the channel on every click and refuses the NSFW response. Frankly relies on Discord's access controls and does not independently verify a user's age. NSFW features are intended only for users who are at least 18 and legally permitted to access adult content.
 
 ## 10. Your rights
 
@@ -110,5 +110,7 @@ This policy may be updated if Frankly's operation or legal obligations change. M
 
 Michael Standen is Frankly's privacy contact. For privacy questions or requests, contact:
 
-**Michael Standen**  
-Email: [michael@aocollab.tech](mailto:michael@aocollab.tech)
+- **Agency:** Ao Collaboration Ltd
+- **Attention:** Michael Standen
+- **Address:** 36 Bleakhouse Rd, Howick, Auckland, New Zealand
+- **Email:** [michael@aocollab.tech](mailto:michael@aocollab.tech)

@@ -12,9 +12,9 @@ A small Discord bot for candid conversations. It serves **Truth** and **Would Yo
 - Guild-only installation and command use; commands are unavailable in DMs and user-installed contexts
 - Rich question embeds showing the requester's display name and avatar, colored blue for SFW and red for NSFW
 - Persistent **Another!** buttons that post each new question as a new message without changing the original post
-- **Another NSFW!** buttons in age-restricted channels, with the channel restriction rechecked on every click
+- **Another NSFW!** buttons included when a message is created in an age-restricted channel, with the current restriction rechecked on every click
 - Optional `nsfw` argument on both commands
-- NSFW requests and controls restricted to age-restricted Discord channels
+- NSFW responses restricted to channels that are currently age-restricted
 - OpenAI or OpenRouter selection from operator-reviewed question options
 - Automatic local random fallback when no AI key is configured, selection fails, or a provider returns anything outside the approved options
 - 250 general and 250 NSFW fallback questions for each feature
@@ -111,7 +111,7 @@ Set `nsfw` to `true` for adult-only questions. Discord must mark the current cha
 
 ## Legal
 
-Use of the hosted Frankly bot is governed by:
+The hosted Frankly bot is operated by **Ao Collaboration Ltd**. Its use is governed by:
 
 - [Privacy Policy](PRIVACY.md)
 - [Terms of Service](TERMS.md)

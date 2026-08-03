@@ -2,7 +2,7 @@
 
 **Effective date: 4 August 2026 (New Zealand time)**
 
-These Terms of Service (the **Terms**) govern your use of the Frankly Discord bot (**Frankly**), operated by **Michael Standen** in New Zealand.
+These Terms of Service (the **Terms**) govern your use of the Frankly Discord bot (**Frankly**), operated by **Ao Collaboration Ltd** in New Zealand.
 
 By invoking a Frankly command, clicking a Frankly button, installing Frankly, or otherwise using the service, you agree to these Terms. If you do not agree, do not use Frankly.
 
@@ -20,7 +20,7 @@ For general use, you must:
 - meet any higher minimum age imposed by local law; and
 - have a parent or guardian's permission if applicable law requires it.
 
-NSFW features are intended only for people who are **18 or older** and legally permitted to access adult content. Frankly permits NSFW commands and buttons only when Discord reports the current channel as age-restricted. The NSFW control is hidden outside those channels, and the bot rechecks the channel before every NSFW response.
+NSFW features are intended only for people who are **18 or older** and legally permitted to access adult content. Frankly permits an NSFW response only when Discord reports the current channel as age-restricted. The NSFW control is omitted when a message is created outside such a channel. If the channel's restriction is removed later, an existing control may remain visible, but the bot rechecks the channel and refuses the NSFW response on every click.
 
 Frankly relies on Discord's age-gating and channel controls. Frankly does not independently verify age, and its technical check is not a representation that every person with channel access is legally eligible. Users and server administrators remain responsible for complying with Discord's rules and applicable law and for correctly restricting adult channels.
 
@@ -91,7 +91,7 @@ Nothing in these Terms excludes, restricts, or modifies any right or remedy that
 
 ## 11. Limitation of liability
 
-To the maximum extent permitted by law, Michael Standen will not be liable for indirect, incidental, special, consequential, or exemplary loss arising from or relating to Frankly, including loss arising from user conduct, Discord content, service interruption, third-party services, or reliance on a question.
+To the maximum extent permitted by law, Ao Collaboration Ltd will not be liable for indirect, incidental, special, consequential, or exemplary loss arising from or relating to Frankly, including loss arising from user conduct, Discord content, service interruption, third-party services, or reliance on a question.
 
 Where liability cannot lawfully be excluded, it is limited only to the extent permitted by applicable law. Nothing in these Terms limits liability for fraud, wilful misconduct, or any other liability that cannot legally be limited.
 
@@ -117,5 +117,7 @@ If part of these Terms is held unenforceable, the remaining provisions continue 
 
 Questions about these Terms may be sent to:
 
-**Michael Standen**  
-Email: [michael@aocollab.tech](mailto:michael@aocollab.tech)
+- **Entity:** Ao Collaboration Ltd
+- **Attention:** Michael Standen
+- **Address:** 36 Bleakhouse Rd, Howick, Auckland, New Zealand
+- **Email:** [michael@aocollab.tech](mailto:michael@aocollab.tech)
