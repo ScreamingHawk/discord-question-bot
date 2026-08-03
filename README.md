@@ -108,6 +108,13 @@ Set `nsfw` to `true` for adult-only questions. Discord must mark the current cha
 .venv/bin/ruff check src tests
 ```
 
+## Legal
+
+Use of the hosted Frankly bot is governed by:
+
+- [Privacy Policy](PRIVACY.md)
+- [Terms of Service](TERMS.md)
+
 ## License
 
 [MIT](LICENSE) © 2026 Michael Standen
