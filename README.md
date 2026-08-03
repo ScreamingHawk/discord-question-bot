@@ -113,8 +113,8 @@ Set `nsfw` to `true` for adult-only questions. Discord must mark the current cha
 
 The hosted Frankly bot is operated by **Ao Collaboration Ltd**. Its use is governed by:
 
-- [Privacy Policy](PRIVACY.md)
-- [Terms of Service](TERMS.md)
+- [Privacy Policy](https://screaminghawk.github.io/discord-question-bot/privacy/) ([source](PRIVACY.md))
+- [Terms of Service](https://screaminghawk.github.io/discord-question-bot/terms/) ([source](TERMS.md))
 
 ## License
 

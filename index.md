@@ -9,8 +9,8 @@ Frankly is a Discord bot for candid **Truth** and **Would You Rather** conversat
 
 ## Legal documents
 
-- [Privacy Policy]({{ '/privacy.html' | relative_url }})
-- [Terms of Service]({{ '/terms.html' | relative_url }})
+- [Privacy Policy]({{ '/privacy/' | relative_url }})
+- [Terms of Service]({{ '/terms/' | relative_url }})
 
 The hosted Frankly bot is operated by **Ao Collaboration Ltd**.
 
