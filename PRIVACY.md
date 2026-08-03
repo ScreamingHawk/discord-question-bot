@@ -29,7 +29,7 @@ The resulting post is visible to people who can access that Discord channel. Its
 
 The Discord metadata described above is processed transiently, but Frankly does not place interaction history or user profiles in an operator-controlled persistent store. Frankly does not intentionally request or retain:
 
-- message content or message history;
+- unrelated Discord user message content or general channel history;
 - direct messages unrelated to a Frankly interaction;
 - IP addresses or device identifiers from Discord users;
 - email addresses, phone numbers, payment information, or Discord credentials;
