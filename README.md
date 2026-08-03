@@ -2,19 +2,20 @@
 
 ![Frankly profile image](assets/profile.png)
 
-A small Discord bot for candid conversations. It serves **Truth** and **Would You Rather** questions for an international audience aged 30+, with optional adult-only modes.
+A small Discord bot for candid conversations. It serves **Truth** and **Would You Rather** questions designed with an adult audience in mind, with optional 18+ modes in age-restricted channels.
 
 **Recommended bot name: Frankly.** It is short, friendly, and fits both honest answers and difficult choices. The included 1024×1024 profile image was generated with `openai/gpt-image-1-mini` through OpenRouter and is safe for Discord's circular crop.
 
 ## Features
 
 - Global `/truth` and `/would_you_rather` slash commands
+- Guild-only installation and command use; commands are unavailable in DMs and user-installed contexts
 - Rich question embeds showing the requester's display name and avatar, colored blue for SFW and red for NSFW
 - Persistent **Another!** buttons that post each new question as a new message without changing the original post
 - **Another NSFW!** buttons in age-restricted channels, with the channel restriction rechecked on every click
 - Optional `nsfw` argument on both commands
 - NSFW requests and controls restricted to age-restricted Discord channels
-- OpenAI or OpenRouter selection from audited question options
+- OpenAI or OpenRouter selection from operator-reviewed question options
 - Automatic local random fallback when no AI key is configured, selection fails, or a provider returns anything outside the approved options
 - 250 general and 250 NSFW fallback questions for each feature
 - No privileged Discord intents
@@ -89,7 +90,7 @@ If it reports `Linger=no`, enable it once with `sudo loginctl enable-linger "$US
 | `OPENROUTER_API_KEY` | No | — |
 | `OPENROUTER_MODEL` | No | `openai/gpt-4o-mini` |
 
-OpenAI takes priority when both keys are present. For each request, a configured provider is shown 12 randomly sampled, audited questions and must choose one verbatim. Provider-created or modified text is rejected. With neither key—or if provider selection fails—the bot selects randomly from the same bundled lists. This keeps normal and NSFW channel boundaries enforceable without trusting generated text.
+OpenAI takes priority when both keys are present. For each request, a configured provider is shown 12 randomly sampled, operator-reviewed questions and must choose one verbatim. Provider-created or modified text is rejected. With neither key—or if provider selection fails—the bot selects randomly from the same bundled lists. This keeps normal and NSFW channel boundaries enforceable without trusting generated text.
 
 ## Commands
 

@@ -103,11 +103,15 @@ def build_bot(env: Mapping[str, str] | None = None) -> commands.Bot:
         )
 
     @bot.tree.command(name="truth", description="Get a random truth question")
+    @app_commands.allowed_installs(guilds=True, users=False)
+    @app_commands.allowed_contexts(guilds=True, dms=False, private_channels=False)
     @app_commands.describe(nsfw="Allow adult-only questions (NSFW channels only)")
     async def truth(interaction: discord.Interaction, nsfw: bool = False) -> None:
         await send_question(interaction, "truth", nsfw, truth_service)
 
     @bot.tree.command(name="would_you_rather", description="Get a random Would You Rather question")
+    @app_commands.allowed_installs(guilds=True, users=False)
+    @app_commands.allowed_contexts(guilds=True, dms=False, private_channels=False)
     @app_commands.describe(nsfw="Allow adult-only questions (NSFW channels only)")
     async def would_you_rather(interaction: discord.Interaction, nsfw: bool = False) -> None:
         await send_question(interaction, "would_you_rather", nsfw, wyr_service)

@@ -227,6 +227,21 @@ async def test_another_button_posts_new_would_you_rather_question():
     }
 
 
+def test_commands_are_guild_installed_and_guild_only():
+    bot = build_bot({})
+
+    for name in ("truth", "would_you_rather"):
+        command = bot.tree.get_command(name)
+        assert command is not None
+        assert command.allowed_installs is not None
+        assert command.allowed_installs.guild is True
+        assert command.allowed_installs.user is False
+        assert command.allowed_contexts is not None
+        assert command.allowed_contexts.guild is True
+        assert command.allowed_contexts.dm_channel is False
+        assert command.allowed_contexts.private_channel is False
+
+
 def test_main_keeps_discord_logging_enabled(monkeypatch):
     calls = []
 

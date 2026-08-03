@@ -1,6 +1,6 @@
 # Frankly Terms of Service
 
-**Effective date: 4 August 2026**
+**Effective date: 4 August 2026 (New Zealand time)**
 
 These Terms of Service (the **Terms**) govern your use of the Frankly Discord bot (**Frankly**), operated by **Michael Standen** in New Zealand.
 
@@ -8,7 +8,7 @@ By invoking a Frankly command, clicking a Frankly button, installing Frankly, or
 
 ## 1. The service
 
-Frankly provides Truth and Would You Rather party-game questions through Discord slash commands and message buttons. Questions may be SFW or, in Discord age-restricted channels, NSFW. Frankly may select locally from bundled, audited question banks or ask a configured AI provider to choose one audited option verbatim.
+Frankly provides Truth and Would You Rather party-game questions through Discord slash commands and message buttons in Discord servers. Questions may be SFW or, in Discord age-restricted channels, NSFW. Frankly may select locally from bundled, operator-reviewed question banks or ask a configured AI provider to choose one reviewed option verbatim.
 
 Frankly is provided for entertainment. It is not professional, medical, legal, relationship, or safety advice.
 
@@ -59,7 +59,7 @@ A Frankly response is posted into the Discord channel where it was requested and
 
 ## 6. Third-party services
 
-Frankly depends on Discord and may optionally use OpenAI or OpenRouter to select from audited question options. OpenRouter may route the request to its selected model provider. Those services are independent third parties governed by their own terms and privacy policies.
+Frankly depends on Discord and may optionally use OpenAI or OpenRouter to select from operator-reviewed question options. OpenRouter may route the request to its selected downstream model provider. Those services may process and retain requests under their respective settings, terms, and privacy policies.
 
 Frankly does not control and is not responsible for third-party availability, security, moderation, age-assurance decisions, policy changes, or data practices. Use of Frankly does not replace your obligations to those services.
 
@@ -85,7 +85,7 @@ You may stop using Frankly at any time. A server administrator may remove the bo
 
 To the maximum extent permitted by law, Frankly is provided without warranties of uninterrupted availability, fitness for a particular purpose, accuracy, or suitability for a particular group or situation.
 
-You are responsible for deciding whether a question and its surrounding discussion are appropriate. Frankly does not control how users answer, react, or behave, and the operator is not responsible for user-generated conversation or conduct.
+You are responsible for deciding whether a question and its surrounding discussion are appropriate. Frankly does not control how users answer, react, or behave. To the extent permitted by law, the operator is not responsible for user-generated conversation or conduct; this does not exclude responsibility for the operator's own conduct or any liability that cannot legally be limited.
 
 Nothing in these Terms excludes, restricts, or modifies any right or remedy that cannot lawfully be excluded under the New Zealand Consumer Guarantees Act 1993, Fair Trading Act 1986, or other applicable law.
 
@@ -101,7 +101,7 @@ To the extent permitted by law, you are responsible for loss or claims resulting
 
 ## 13. Changes to these Terms
 
-These Terms may be updated to reflect service, platform, or legal changes. Material changes will be published in this repository with a revised effective date. Continued use after the revised Terms take effect constitutes acceptance where permitted by law.
+These Terms may be updated to reflect service, platform, or legal changes. Material changes will be published in this repository with a revised effective date and, where practical, announced through Frankly's public service or application information. Material changes apply prospectively. Continued use after the revised Terms take effect constitutes acceptance where permitted by law.
 
 ## 14. Governing law and disputes
 
