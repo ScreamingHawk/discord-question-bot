@@ -1,0 +1,17 @@
+title: Frankly
+description: Privacy Policy and Terms of Service for the Frankly Discord bot
+theme: jekyll-theme-minimal
+repository: ScreamingHawk/discord-question-bot
+logo: /discord-question-bot/assets/profile.png
+
+exclude:
+  - .env
+  - .env.example
+  - .github
+  - .gitignore
+  - .python-version
+  - .venv
+  - deploy
+  - src
+  - tests
+  - pyproject.toml
