@@ -92,7 +92,7 @@ async def _complete(provider: Provider, system: str, prompt: str) -> str:
     response = await client.chat.completions.create(
         model=provider.model,
         messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
-        temperature=1.2,
+        temperature=1.5,
         max_tokens=400,
     )
     return response.choices[0].message.content or ""
@@ -127,28 +127,30 @@ class QuestionGenerator:
 
         if self.provider:
             system = (
-                "Choose exactly one question from the approved options supplied by the user for an "
-                "international audience aged 30+. Return that question verbatim and nothing else."
+                "You generate exactly one question for a party game. "
+                "Return ONLY the question itself — no explanation, no labels, no extra text."
             )
-            mode = (
-                "Use direct, unambiguous adult sexual vocabulary rather than mild euphemisms. "
-                "Keep it to one short party-game question, not erotic narrative. It must involve "
-                "only consenting adults and must not include minors, age ambiguity, incest, "
-                "coercion, exploitation, sexual violence, intoxicated consent, public exposure, "
-                "or unsafe sexual acts."
-                if nsfw
-                else "Keep the question suitable for a general adult channel and non-sexual."
-            )
-            options = self.rng.sample(approved, min(12, len(approved)))
-            option_text = "\n".join(f"- {question}" for question in options)
+            if nsfw:
+                mode = (
+                    "Use direct, unambiguous adult sexual vocabulary rather than mild euphemisms. "
+                    "Keep it to one short party-game question, not erotic narrative. It must involve "
+                    "only consenting adults and must not include minors, age ambiguity, incest, "
+                    "coercion, exploitation, sexual violence, intoxicated consent, public exposure, "
+                    "or unsafe sexual acts."
+                )
+            else:
+                mode = "Keep the question suitable for a general adult channel and non-sexual."
+            examples = self.rng.sample(approved, min(3, len(approved)))
+            example_text = "\n".join(f"- {question}" for question in examples)
             try:
                 answer = await self.complete(
                     self.provider,
                     system,
-                    f"Select one {kind} question verbatim. {mode}\nApproved options:\n{option_text}",
+                    f"Generate one {kind} question. {mode}\n\n"
+                    f"Style examples (create something different from these):\n{example_text}",
                 )
-                if answer in options:
+                if valid_question_shape(answer, nsfw) and validator(answer):
                     return answer
             except Exception as error:  # noqa: BLE001
-                logger.debug("Provider question selection failed: %s", error)
+                logger.debug("AI question generation failed: %s", error)
         return self.rng.choice(approved)
